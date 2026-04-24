@@ -13,7 +13,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/vehicles', require('./routes/vehicle.routes'));
 app.use('/api/models', require('./routes/model.routes'));
-// app.use('/api/customers',   require('./routes/customer.routes'));
+app.use('/api/customers', require('./routes/customer.routes'));
 // app.use('/api/reservations',require('./routes/reservation.routes'));
 // app.use('/api/contracts',   require('./routes/contract.routes'));
 // app.use('/api/payments',    require('./routes/payment.routes'));

@@ -3,6 +3,7 @@ import ProtectedRoute from './ProtectedRoute';
 import Login from '../pages/Login';
 import Dashboard from '../pages/Dashboard';
 import VehicleList from '../pages/vehicles/VehicleList';
+import CustomerList from '../pages/customers/CustomerList';
 
 export default function AppRouter() {
   return (
@@ -13,6 +14,14 @@ export default function AppRouter() {
         element={
           <ProtectedRoute>
             <VehicleList />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/customers"
+        element={
+          <ProtectedRoute>
+            <CustomerList />
           </ProtectedRoute>
         }
       />
