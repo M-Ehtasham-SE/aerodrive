@@ -14,6 +14,14 @@ import InsuranceList from '../pages/insurance/InsuranceList';
 import BranchList from '../pages/branches/BranchList';
 import Landing from '../pages/Landing';
 import StaffList from '../pages/staff/StaffList';
+import Signup from '../pages/Signup';
+import PublicLayout from '../components/layout/PublicLayout';
+import { useAuth } from '../context/AuthContext';
+
+function FlexibleLayout({ children }) {
+  const { user } = useAuth();
+  return user ? <AppLayout>{children}</AppLayout> : <PublicLayout>{children}</PublicLayout>;
+}
 
 function WithLayout({ children }) {
   return (
@@ -27,9 +35,10 @@ export default function AppRouter() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
       <Route path="/" element={<Landing />} />
       <Route path="/dashboard" element={<WithLayout><Dashboard /></WithLayout>} />
-      <Route path="/vehicles" element={<WithLayout><VehicleList /></WithLayout>} />
+      <Route path="/vehicles" element={<FlexibleLayout><VehicleList /></FlexibleLayout>} />
       <Route path="/customers" element={<WithLayout><CustomerList /></WithLayout>} />
       <Route path="/reservations" element={<WithLayout><ReservationList /></WithLayout>} />
       <Route path="/contracts" element={<WithLayout><ContractList /></WithLayout>} />

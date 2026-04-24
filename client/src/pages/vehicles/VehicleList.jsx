@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from '../../api/axios';
 import { Plus, Trash2, Edit } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../context/AuthContext';
 import VehicleForm from './VehicleForm';
 import VehicleDetail from './VehicleDetail';
 
@@ -10,6 +11,8 @@ export default function VehicleList() {
   const [showForm, setShowForm] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const { user } = useAuth();
+  const isStaff = user && ['manager', 'clerk', 'mechanic'].includes(user.role);
 
   useEffect(() => {
     fetchVehicles();
@@ -44,8 +47,8 @@ export default function VehicleList() {
   return (
     <div style={{ padding: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h1 style={{ fontFamily: 'Exo 2', fontSize: '22px' }}>Vehicles</h1>
-        <button className="btn-primary" onClick={() => setShowForm(true)}><Plus size={16} /> Add Vehicle</button>
+        <h1 style={{ fontFamily: 'Exo 2', fontSize: '22px' }}>{isStaff ? 'Vehicle Fleet Management' : 'Browse Our Fleet'}</h1>
+        {isStaff && <button className="btn-primary" onClick={() => setShowForm(true)}><Plus size={16} /> Add Vehicle</button>}
       </div>
 
       <div className="card">
@@ -70,9 +73,13 @@ export default function VehicleList() {
                   <span className={`badge badge-${v.Status.toLowerCase()}`}>{v.Status}</span>
                 </td>
                 <td style={{ padding: '12px', display: 'flex', gap: '8px' }}>
-                  <button className="tag" onClick={() => setSelectedVehicle(v)}>View</button>
-                  <button onClick={() => { setEditingVehicle(v); setShowForm(true); }} style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer' }}><Edit size={16} /></button>
-                  <button onClick={() => handleDelete(v.VehicleID)} style={{ background: 'transparent', border: 'none', color: 'var(--status-danger)', cursor: 'pointer' }}><Trash2 size={16} /></button>
+                  <button className="tag" onClick={() => setSelectedVehicle(v)}>View Details</button>
+                  {isStaff && (
+                    <>
+                      <button onClick={() => { setEditingVehicle(v); setShowForm(true); }} style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer' }}><Edit size={16} /></button>
+                      <button onClick={() => handleDelete(v.VehicleID)} style={{ background: 'transparent', border: 'none', color: 'var(--status-danger)', cursor: 'pointer' }}><Trash2 size={16} /></button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}

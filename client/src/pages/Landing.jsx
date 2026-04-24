@@ -6,7 +6,6 @@ import heroImage from '../assets/hero-car.png';
 
 export default function Landing() {
   const { user } = useAuth();
-  const startPath = user ? '/dashboard' : '/login';
 
   return (
     <div className="landing-container">
@@ -19,7 +18,7 @@ export default function Landing() {
           {!user ? (
             <>
               <Link to="/login" className="btn-secondary">Sign In</Link>
-              <Link to="/login" className="btn-primary">Get Started</Link>
+              <Link to="/signup" className="btn-primary">Sign Up</Link>
             </>
           ) : (
             <Link to="/dashboard" className="btn-primary">Go to Dashboard</Link>
@@ -38,8 +37,8 @@ export default function Landing() {
             instant reservations, and smart management all in one place.
           </p>
           <div className="hero-actions">
-            <Link to={startPath} className="btn-primary btn-lg">Explore Fleet</Link>
-            <button className="btn-outline btn-lg">Learn More</button>
+            <Link to="/vehicles" className="btn-primary btn-lg">Explore Fleet</Link>
+            {!user && <Link to="/signup" className="btn-outline btn-lg">Get Started</Link>}
           </div>
         </div>
         <div className="hero-image-container">
