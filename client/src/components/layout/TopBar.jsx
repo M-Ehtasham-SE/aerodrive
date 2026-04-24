@@ -18,7 +18,7 @@ export default function TopBar() {
       padding: '0 24px', position: 'sticky', top: 0, zIndex: 40
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>AeroDrive</span>
+        <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>RideNext: Vehicle Rental Management System</span>
         <span style={{ color: 'var(--text-muted)' }}>/</span>
         <span style={{ color: 'var(--text-primary)', fontSize: '13px', fontWeight: 500 }}>{pageName}</span>
       </div>

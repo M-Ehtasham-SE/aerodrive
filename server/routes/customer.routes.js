@@ -8,6 +8,7 @@ router.get('/', verifyToken, requireRole('manager', 'clerk'), customerController
 router.get('/:id', verifyToken, customerController.getCustomerById);
 router.post('/', customerController.createCustomer);
 router.put('/:id', verifyToken, customerController.updateCustomer);
+router.delete('/:id', verifyToken, requireRole('manager'), customerController.deleteCustomer);
 router.get('/:id/reservations', verifyToken, customerController.getCustomerReservations);
 
 module.exports = router;

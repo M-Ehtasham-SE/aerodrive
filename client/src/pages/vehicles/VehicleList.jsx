@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from '../../api/axios';
-import { Plus } from 'lucide-react';
+import { Plus, Trash2, Edit } from 'lucide-react';
 import toast from 'react-hot-toast';
 import VehicleForm from './VehicleForm';
 import VehicleDetail from './VehicleDetail';
@@ -8,6 +8,7 @@ import VehicleDetail from './VehicleDetail';
 export default function VehicleList() {
   const [vehicles, setVehicles] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingVehicle, setEditingVehicle] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState(null);
 
   useEffect(() => {
@@ -25,7 +26,19 @@ export default function VehicleList() {
 
   const handleSave = () => {
     setShowForm(false);
+    setEditingVehicle(null);
     fetchVehicles();
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this vehicle?')) return;
+    try {
+      await axios.delete(`/vehicles/${id}`);
+      toast.success('Vehicle removed');
+      fetchVehicles();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to delete vehicle');
+    }
   };
 
   return (
@@ -56,15 +69,17 @@ export default function VehicleList() {
                 <td style={{ padding: '12px' }}>
                   <span className={`badge badge-${v.Status.toLowerCase()}`}>{v.Status}</span>
                 </td>
-                <td style={{ padding: '12px' }}>
-                  <button onClick={() => setSelectedVehicle(v)} style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer' }}>View</button>
+                <td style={{ padding: '12px', display: 'flex', gap: '8px' }}>
+                  <button className="tag" onClick={() => setSelectedVehicle(v)}>View</button>
+                  <button onClick={() => { setEditingVehicle(v); setShowForm(true); }} style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer' }}><Edit size={16} /></button>
+                  <button onClick={() => handleDelete(v.VehicleID)} style={{ background: 'transparent', border: 'none', color: 'var(--status-danger)', cursor: 'pointer' }}><Trash2 size={16} /></button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      {showForm && <VehicleForm onClose={() => setShowForm(false)} onSave={handleSave} />}
+      {showForm && <VehicleForm onClose={() => { setShowForm(false); setEditingVehicle(null); }} onSave={handleSave} initialData={editingVehicle} />}
       <VehicleDetail vehicle={selectedVehicle} onClose={() => setSelectedVehicle(null)} />
     </div>
   );

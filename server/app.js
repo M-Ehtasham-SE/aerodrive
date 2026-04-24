@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const app = express();
 
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:5173'], credentials: true }));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -24,7 +24,16 @@ app.use('/api/branches',    require('./routes/branch.routes'));
 app.use('/api/staff',       require('./routes/staff.routes'));
 app.use('/api/dashboard',   require('./routes/dashboard.routes'));
 
+if (!process.env.JWT_SECRET) {
+  console.error('CRITICAL: JWT_SECRET is not defined in .env file!');
+}
+
 if (require.main === module) {
+  const { sequelize } = require('./models');
+  sequelize.authenticate()
+    .then(() => console.log('Database connected successfully.'))
+    .catch(err => console.error('Database connection failed:', err.message));
+
   app.listen(process.env.PORT || 5000, () =>
     console.log(`AeroDrive server running on port ${process.env.PORT || 5000}`)
   );

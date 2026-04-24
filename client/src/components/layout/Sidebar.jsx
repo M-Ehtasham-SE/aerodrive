@@ -6,16 +6,17 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-  { path: '/', label: 'Dashboard', icon: LayoutDashboard, roles: ['manager'] },
-  { path: '/vehicles', label: 'Vehicles', icon: Car, roles: ['manager', 'clerk', 'mechanic'] },
+  { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['manager', 'customer'] },
+  { path: '/vehicles', label: 'Vehicles', icon: Car, roles: ['manager', 'clerk', 'mechanic', 'customer'] },
   { path: '/customers', label: 'Customers', icon: Users, roles: ['manager', 'clerk'] },
-  { path: '/reservations', label: 'Reservations', icon: KeyRound, roles: ['manager', 'clerk'] },
+  { path: '/reservations', label: 'Reservations', icon: KeyRound, roles: ['manager', 'clerk', 'customer'] },
   { path: '/contracts', label: 'Contracts', icon: KeyRound, roles: ['manager', 'clerk'] },
   { path: '/payments', label: 'Payments', icon: CreditCard, roles: ['manager', 'clerk'] },
   { path: '/maintenance', label: 'Maintenance', icon: Wrench, roles: ['manager', 'mechanic'] },
   { path: '/damage', label: 'Damage', icon: AlertTriangle, roles: ['manager', 'clerk'] },
   { path: '/insurance', label: 'Insurance', icon: Shield, roles: ['manager'] },
   { path: '/branches', label: 'Branches', icon: Building2, roles: ['manager'] },
+  { path: '/staff', label: 'Staff Members', icon: Users, roles: ['manager'] },
 ];
 
 export default function Sidebar() {
@@ -40,7 +41,7 @@ export default function Sidebar() {
         <div style={{ width: '32px', height: '32px', background: 'var(--accent-primary)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: '10px' }}>
           <Car size={18} color="#fff" />
         </div>
-        <span style={{ fontFamily: 'Exo 2', fontWeight: 700, fontSize: '18px', color: 'var(--text-primary)' }}>AeroDrive</span>
+        <span style={{ fontFamily: 'Exo 2', fontWeight: 700, fontSize: '18px', color: 'var(--text-primary)' }}>RideNext: Vehicle Rental Management System</span>
       </div>
 
       {/* Navigation */}
@@ -49,7 +50,7 @@ export default function Sidebar() {
           <NavLink
             key={path}
             to={path}
-            end={path === '/'}
+            end={path === '/dashboard'}
             style={({ isActive }) => ({
               display: 'flex', alignItems: 'center', gap: '10px',
               padding: '10px 20px', textDecoration: 'none', cursor: 'pointer',

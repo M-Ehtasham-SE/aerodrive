@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Plane } from 'lucide-react';
+import { Car } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function Login() {
@@ -15,7 +15,7 @@ export default function Login() {
     try {
       await login({ phone, password });
       toast.success('Logged in successfully');
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Login failed');
     }
@@ -26,9 +26,9 @@ export default function Login() {
       <div className="card" style={{ width: '100%', maxWidth: '400px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '32px' }}>
           <div style={{ background: 'var(--bg-elevated)', padding: '16px', borderRadius: '50%', marginBottom: '16px' }}>
-            <Plane color="var(--accent-primary)" size={32} />
+            <Car color="var(--accent-primary)" size={32} />
           </div>
-          <h1 style={{ fontFamily: 'Exo 2', fontSize: '24px', color: 'var(--text-primary)' }}>AeroDrive</h1>
+          <h1 style={{ fontFamily: 'Exo 2', fontSize: '24px', color: 'var(--text-primary)', textAlign: 'center' }}>RideNext: Vehicle Rental Management System</h1>
           <p style={{ color: 'var(--text-secondary)' }}>Fleet Intelligence. Redefined.</p>
         </div>
         

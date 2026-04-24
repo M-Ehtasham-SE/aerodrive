@@ -12,6 +12,8 @@ import DamageList from '../pages/damage/DamageList';
 import MaintenanceList from '../pages/maintenance/MaintenanceList';
 import InsuranceList from '../pages/insurance/InsuranceList';
 import BranchList from '../pages/branches/BranchList';
+import Landing from '../pages/Landing';
+import StaffList from '../pages/staff/StaffList';
 
 function WithLayout({ children }) {
   return (
@@ -25,7 +27,8 @@ export default function AppRouter() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
-      <Route path="/" element={<WithLayout><Dashboard /></WithLayout>} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/dashboard" element={<WithLayout><Dashboard /></WithLayout>} />
       <Route path="/vehicles" element={<WithLayout><VehicleList /></WithLayout>} />
       <Route path="/customers" element={<WithLayout><CustomerList /></WithLayout>} />
       <Route path="/reservations" element={<WithLayout><ReservationList /></WithLayout>} />
@@ -35,6 +38,7 @@ export default function AppRouter() {
       <Route path="/maintenance" element={<WithLayout><MaintenanceList /></WithLayout>} />
       <Route path="/insurance" element={<WithLayout><InsuranceList /></WithLayout>} />
       <Route path="/branches" element={<WithLayout><BranchList /></WithLayout>} />
+      <Route path="/staff" element={<ProtectedRoute allowedRoles={['manager']}><AppLayout><StaffList /></AppLayout></ProtectedRoute>} />
     </Routes>
   );
 }

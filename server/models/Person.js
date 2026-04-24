@@ -8,7 +8,7 @@ const Person = sequelize.define('Person', {
   Street: { type: DataTypes.STRING(100) },
   City: { type: DataTypes.STRING(50) },
   ZipCode: { type: DataTypes.STRING(20) },
-  Phone: { type: DataTypes.STRING(20), allowNull: false },
+  Phone: { type: DataTypes.STRING(20), allowNull: false, unique: true },
   AlternatePhone: { type: DataTypes.STRING(20) },
   Password: { type: DataTypes.STRING(255), allowNull: false },
 }, { tableName: 'person', timestamps: true, createdAt: 'CreatedAt', updatedAt: false });

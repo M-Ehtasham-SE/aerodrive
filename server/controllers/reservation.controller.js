@@ -5,18 +5,31 @@ exports.getReservations = async (req, res) => {
   try {
     const { status, from, to } = req.query;
     let whereClause = {};
+    
+    // Security: Customers only see their own reservations
+    console.log(`Fetching reservations for UserID: ${req.user.userId}, Role: ${req.user.role}`);
+    if (req.user.role === 'customer') {
+      whereClause.CustomerID = req.user.userId;
+      console.log('Applying CustomerID filter:', whereClause.CustomerID);
+    }
+
     if (status) whereClause.Status = status;
     if (from && to) {
       whereClause.PickupDate = { [Op.between]: [from, to] };
     }
+
     const reservations = await Reservation.findAll({
       where: whereClause,
       include: [
-        { model: Customer, include: [{ model: Person, attributes: ['FirstName', 'LastName'] }] },
+        { 
+          model: Customer, 
+          include: [{ model: Person, attributes: ['FirstName', 'LastName', 'Phone'] }] 
+        },
         Vehicle
       ],
       order: [['ReservationDate', 'DESC']]
     });
+    console.log(`Found ${reservations.length} reservations for this user.`);
     res.json({ success: true, data: reservations });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch reservations', error: error.message });

@@ -2,12 +2,30 @@ import { useState, useEffect } from 'react';
 import axios from '../../api/axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import { Search } from 'lucide-react';
 
 export default function ReservationWizard({ onClose, onSave }) {
   const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [vehicles, setVehicles] = useState([]);
-  const [formData, setFormData] = useState({ vehicleId: '', customerId: user?.userId || '', pickupDate: '', returnDate: '', specialRequests: '' });
+  const [customers, setCustomers] = useState([]);
+  const [formData, setFormData] = useState({ 
+    vehicleId: '', 
+    customerId: user?.role === 'customer' ? user?.userId : '', 
+    pickupDate: '', 
+    returnDate: '', 
+    specialRequests: '' 
+  });
+
+  const isStaff = user?.role === 'manager' || user?.role === 'clerk';
+
+  useEffect(() => {
+    if (isStaff) {
+      axios.get('/customers')
+        .then(res => setCustomers(res.data.data))
+        .catch(() => {});
+    }
+  }, [isStaff]);
 
   useEffect(() => {
     if (formData.pickupDate && formData.returnDate) {
@@ -19,6 +37,10 @@ export default function ReservationWizard({ onClose, onSave }) {
 
   const handleSubmit = async () => {
     try {
+      if (!formData.customerId) {
+        toast.error('Please select a customer');
+        return;
+      }
       await axios.post('/reservations', formData);
       toast.success('Reservation created!');
       onSave();
@@ -39,19 +61,38 @@ export default function ReservationWizard({ onClose, onSave }) {
 
         {step === 1 && (
           <div>
-            <h2 style={{ fontFamily: 'Exo 2', marginBottom: '20px' }}>Step 1 — Select Dates</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '6px', color: 'var(--text-secondary)', fontSize: '13px' }}>Pickup Date</label>
-                <input type="date" className="input" onChange={e => setFormData({ ...formData, pickupDate: e.target.value })} />
-              </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '6px', color: 'var(--text-secondary)', fontSize: '13px' }}>Return Date</label>
-                <input type="date" className="input" onChange={e => setFormData({ ...formData, returnDate: e.target.value })} />
+            <h2 style={{ fontFamily: 'Exo 2', marginBottom: '20px' }}>Step 1 — Details</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {isStaff && (
+                <div>
+                  <label style={{ display: 'block', marginBottom: '6px', color: 'var(--text-secondary)', fontSize: '13px' }}>Select Customer</label>
+                  <select 
+                    className="input" 
+                    value={formData.customerId}
+                    onChange={e => setFormData({ ...formData, customerId: e.target.value })}
+                  >
+                    <option value="">-- Choose Customer --</option>
+                    {customers.map(c => (
+                      <option key={c.PersonID} value={c.PersonID}>
+                        {c.Person?.FirstName} {c.Person?.LastName} ({c.Person?.Phone})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: '16px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '6px', color: 'var(--text-secondary)', fontSize: '13px' }}>Pickup Date</label>
+                  <input type="date" className="input" value={formData.pickupDate} onChange={e => setFormData({ ...formData, pickupDate: e.target.value })} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '6px', color: 'var(--text-secondary)', fontSize: '13px' }}>Return Date</label>
+                  <input type="date" className="input" value={formData.returnDate} onChange={e => setFormData({ ...formData, returnDate: e.target.value })} />
+                </div>
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '6px', color: 'var(--text-secondary)', fontSize: '13px' }}>Special Requests</label>
-                <textarea className="input" rows={3} onChange={e => setFormData({ ...formData, specialRequests: e.target.value })} style={{ resize: 'vertical' }} />
+                <textarea className="input" rows={3} value={formData.specialRequests} onChange={e => setFormData({ ...formData, specialRequests: e.target.value })} style={{ resize: 'vertical' }} />
               </div>
             </div>
           </div>
@@ -74,10 +115,11 @@ export default function ReservationWizard({ onClose, onSave }) {
         {step === 3 && (
           <div>
             <h2 style={{ fontFamily: 'Exo 2', marginBottom: '20px' }}>Step 3 — Review & Confirm</h2>
-            <div className="card" style={{ background: 'var(--bg-elevated)', marginBottom: '16px' }}>
-              <p>Pickup: <strong>{formData.pickupDate}</strong></p>
-              <p>Return: <strong>{formData.returnDate}</strong></p>
-              <p>Vehicle ID: <strong style={{ fontFamily: 'JetBrains Mono', color: 'var(--text-accent)' }}>{formData.vehicleId}</strong></p>
+            <div className="card" style={{ background: 'var(--bg-elevated)', marginBottom: '16px', fontSize: '14px' }}>
+              <p style={{ marginBottom: '8px' }}>Customer: <strong>{isStaff ? (customers.find(c => c.PersonID == formData.customerId)?.Person?.FirstName + ' ' + customers.find(c => c.PersonID == formData.customerId)?.Person?.LastName) : user.name}</strong></p>
+              <p style={{ marginBottom: '8px' }}>Pickup: <strong>{formData.pickupDate}</strong></p>
+              <p style={{ marginBottom: '8px' }}>Return: <strong>{formData.returnDate}</strong></p>
+              <p style={{ marginBottom: '8px' }}>Vehicle: <strong style={{ fontFamily: 'JetBrains Mono', color: 'var(--text-accent)' }}>{vehicles.find(v => v.VehicleID === formData.vehicleId)?.LicensePlate}</strong></p>
               {formData.specialRequests && <p>Requests: {formData.specialRequests}</p>}
             </div>
           </div>
@@ -86,7 +128,7 @@ export default function ReservationWizard({ onClose, onSave }) {
         <div style={{ display: 'flex', gap: '8px', marginTop: '24px', justifyContent: 'flex-end' }}>
           <button onClick={onClose} className="btn-primary" style={{ background: 'var(--bg-elevated)' }}>Cancel</button>
           {step > 1 && <button onClick={() => setStep(s => s - 1)} className="btn-primary" style={{ background: 'var(--bg-elevated)' }}>Back</button>}
-          {step < 3 && <button onClick={() => setStep(s => s + 1)} className="btn-primary" disabled={step === 1 && (!formData.pickupDate || !formData.returnDate) || step === 2 && !formData.vehicleId}>Next</button>}
+          {step < 3 && <button onClick={() => setStep(s => s + 1)} className="btn-primary" disabled={(step === 1 && (!formData.pickupDate || !formData.returnDate || (isStaff && !formData.customerId))) || (step === 2 && !formData.vehicleId)}>Next</button>}
           {step === 3 && <button onClick={handleSubmit} className="btn-primary">Confirm Reservation</button>}
         </div>
       </div>

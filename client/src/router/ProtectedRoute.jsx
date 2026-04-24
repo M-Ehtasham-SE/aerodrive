@@ -10,7 +10,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     // If not allowed, maybe redirect to a dashboard or unauthorized page
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return children;

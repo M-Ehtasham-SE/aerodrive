@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import axios from '../../api/axios';
 import { Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
+import ReservationWizard from './ReservationWizard';
 
 export default function ReservationList() {
   const [reservations, setReservations] = useState([]);
   const [activeTab, setActiveTab] = useState('All');
+  const [showWizard, setShowWizard] = useState(false);
 
   useEffect(() => { fetchReservations(); }, []);
 
@@ -31,6 +33,9 @@ export default function ReservationList() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <h1 style={{ fontFamily: 'Exo 2', fontSize: '22px' }}>Reservations</h1>
+        <button onClick={() => setShowWizard(true)} className="btn-primary">
+          <Plus size={16} /> New Reservation
+        </button>
       </div>
 
       <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', borderBottom: '1px solid var(--bg-border)', paddingBottom: '12px' }}>
@@ -69,9 +74,17 @@ export default function ReservationList() {
                 </td>
               </tr>
             ))}
+            {filtered.length === 0 && <tr><td colSpan="7" style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)' }}>No reservations found</td></tr>}
           </tbody>
         </table>
       </div>
+
+      {showWizard && (
+        <ReservationWizard 
+          onClose={() => setShowWizard(false)} 
+          onSave={() => { setShowWizard(false); fetchReservations(); }} 
+        />
+      )}
     </div>
   );
 }

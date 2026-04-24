@@ -37,8 +37,10 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { phone, password } = req.body;
-
+  let { phone, password } = req.body;
+  // Basic normalization: remove spaces/hyphens if user types them differently
+  // However, the seed data HAS hyphens. So we should ensure consistency.
+  // For now, let's just use what's sent.
   try {
     const person = await Person.findOne({ where: { Phone: phone } });
     if (!person) return res.status(404).json({ success: false, message: 'User not found' });

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from '../../api/axios';
-import { Plus } from 'lucide-react';
+import { Plus, Trash2, Edit } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CustomerForm from './CustomerForm';
 import CustomerProfile from './CustomerProfile';
@@ -8,6 +8,7 @@ import CustomerProfile from './CustomerProfile';
 export default function CustomerList() {
   const [customers, setCustomers] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingCustomer, setEditingCustomer] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
 
   useEffect(() => {
@@ -25,7 +26,19 @@ export default function CustomerList() {
 
   const handleSave = () => {
     setShowForm(false);
+    setEditingCustomer(null);
     fetchCustomers();
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this customer?')) return;
+    try {
+      await axios.delete(`/customers/${id}`);
+      toast.success('Customer deleted');
+      fetchCustomers();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to delete customer');
+    }
   };
 
   return (
@@ -53,15 +66,17 @@ export default function CustomerList() {
                 <td style={{ padding: '12px' }}>{c.Person?.FirstName} {c.Person?.LastName}</td>
                 <td style={{ padding: '12px' }}>{c.Person?.Phone}</td>
                 <td style={{ padding: '12px' }}>{c.CNIC}</td>
-                <td style={{ padding: '12px' }}>
-                  <button onClick={() => setSelectedCustomer(c.PersonID)} style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer' }}>Profile</button>
+                <td style={{ padding: '12px', display: 'flex', gap: '8px' }}>
+                  <button className="tag" onClick={() => setSelectedCustomer(c.PersonID)}>Profile</button>
+                  <button onClick={() => { setEditingCustomer(c); setShowForm(true); }} style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer' }}><Edit size={16} /></button>
+                  <button onClick={() => handleDelete(c.PersonID)} style={{ background: 'transparent', border: 'none', color: 'var(--status-danger)', cursor: 'pointer' }}><Trash2 size={16} /></button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      {showForm && <CustomerForm onClose={() => setShowForm(false)} onSave={handleSave} />}
+      {showForm && <CustomerForm onClose={() => { setShowForm(false); setEditingCustomer(null); }} onSave={handleSave} initialData={editingCustomer} />}
       {selectedCustomer && <CustomerProfile id={selectedCustomer} onClose={() => setSelectedCustomer(null)} />}
     </div>
   );
