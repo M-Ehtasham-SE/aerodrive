@@ -11,8 +11,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', require('./routes/auth.routes'));
-// We will add other routes as we build them:
-// app.use('/api/vehicles',    require('./routes/vehicle.routes'));
+app.use('/api/vehicles', require('./routes/vehicle.routes'));
+app.use('/api/models', require('./routes/model.routes'));
 // app.use('/api/customers',   require('./routes/customer.routes'));
 // app.use('/api/reservations',require('./routes/reservation.routes'));
 // app.use('/api/contracts',   require('./routes/contract.routes'));
