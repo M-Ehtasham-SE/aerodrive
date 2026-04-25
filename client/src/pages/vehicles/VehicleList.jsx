@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from '../../api/axios';
-import { Plus, Trash2, Edit } from 'lucide-react';
+import { Plus, Trash2, Edit, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
 import VehicleForm from './VehicleForm';
@@ -44,11 +44,39 @@ export default function VehicleList() {
     }
   };
 
+  const exportToCSV = () => {
+    const headers = "ID,LicensePlate,Model,Type,Status,Year,Color,FuelType\n";
+    const rows = vehicles.map(v => {
+      const type = v.Car ? 'Car' : v.Bike ? 'Bike' : v.Truck ? 'Truck' : 'Other';
+      return `VEH-${v.VehicleID},${v.LicensePlate},${v.Model?.ModelName},${type},${v.Status},${v.Year},${v.Color},${v.FuelType}`;
+    }).join("\n");
+    
+    const blob = new Blob([headers + rows], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'fleet_list.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    toast.success('Exporting Fleet List...');
+  };
+
   return (
     <div style={{ padding: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <h1 style={{ fontFamily: 'Exo 2', fontSize: '22px' }}>{isStaff ? 'Vehicle Fleet Management' : 'Browse Our Fleet'}</h1>
-        {isStaff && <button className="btn-primary" onClick={() => setShowForm(true)}><Plus size={16} /> Add Vehicle</button>}
+        <div style={{ display: 'flex', gap: '12px' }}>
+          {isStaff && (
+            <button className="btn-secondary" onClick={exportToCSV} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Download size={16} /> Export CSV
+            </button>
+          )}
+          {isStaff && <button className="btn-primary" onClick={() => setShowForm(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Plus size={16} /> Add Vehicle
+          </button>}
+        </div>
       </div>
 
       <div className="card">

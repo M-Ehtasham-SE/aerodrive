@@ -71,6 +71,7 @@ async function seed() {
 
     const s2 = await Person.create({ FirstName: 'Bob', LastName: 'Williams', Phone: '555-5555', Password: passwordHash });
     await Staff.create({ PersonID: s2.PersonID, Position: 'Mechanic', HireDate: '2021-06-15', Salary: 4000.00, ShiftType: 'Evening', BranchID: branches[1].BranchID });
+    await Mechanic.create({ PersonID: s2.PersonID, Specialization: 'General', ToolKit: 'Master Pro Kit', WorkshopAssigned: 'Main Workshop' });
 
     const m1 = await Person.create({ FirstName: 'Michael', LastName: 'Scott', Phone: '555-6666', Password: passwordHash });
     await Staff.create({ PersonID: m1.PersonID, Position: 'Manager', HireDate: '2015-03-01', Salary: 7000.00, ShiftType: 'Morning', BranchID: branches[0].BranchID });

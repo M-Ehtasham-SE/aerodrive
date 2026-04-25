@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from '../../api/axios';
-import { Plus, Trash2, Edit, UserCog } from 'lucide-react';
+import { Plus, Trash2, Edit, UserCog, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 import StaffForm from './StaffForm';
 
@@ -39,6 +39,24 @@ export default function StaffList() {
     }
   };
 
+  const exportToCSV = () => {
+    const headers = "ID,FirstName,LastName,Position,Branch,Phone,HireDate,Salary\n";
+    const rows = staff.map(s => 
+      `STF-${s.PersonID},${s.Person?.FirstName},${s.Person?.LastName},${s.Position},${s.Branch?.BranchName},${s.Person?.Phone},${s.HireDate},${s.Salary}`
+    ).join("\n");
+    
+    const blob = new Blob([headers + rows], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'staff_list.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    toast.success('Exporting Staff List...');
+  };
+
   return (
     <div style={{ padding: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -46,7 +64,14 @@ export default function StaffList() {
           <h1 style={{ fontFamily: 'Exo 2', fontSize: '22px' }}>Staff Management</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Manage clerks, mechanics, and branch managers.</p>
         </div>
-        <button className="btn-primary" onClick={() => setShowForm(true)}><Plus size={16} /> Add Staff Member</button>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <button className="btn-secondary" onClick={exportToCSV} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Download size={16} /> Export CSV
+          </button>
+          <button className="btn-primary" onClick={() => setShowForm(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Plus size={16} /> Add Staff Member
+          </button>
+        </div>
       </div>
 
       <div className="card">

@@ -41,6 +41,7 @@ Clerk.belongsTo(Staff, { foreignKey: 'PersonID' });
 
 Staff.hasOne(Mechanic, { foreignKey: 'PersonID' });
 Mechanic.belongsTo(Staff, { foreignKey: 'PersonID' });
+Mechanic.belongsTo(Person, { foreignKey: 'PersonID' });
 
 Person.hasMany(EmergencyContact, { foreignKey: 'PersonID', onDelete: 'CASCADE' });
 EmergencyContact.belongsTo(Person, { foreignKey: 'PersonID' });

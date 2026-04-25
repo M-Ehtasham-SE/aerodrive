@@ -1,5 +1,13 @@
 const { Maintenance, MaintenancePart, Vehicle, Mechanic, Person, sequelize } = require('../models');
 
+const parseId = (id) => {
+  if (!id) return null;
+  if (typeof id === 'string') {
+    return parseInt(id.replace(/^(VEH|STF|CUST|MNT|RPT)-/i, ''));
+  }
+  return id;
+};
+
 exports.getMaintenance = async (req, res) => {
   try {
     const { vehicleId, mechanicId, status } = req.query;
@@ -21,12 +29,24 @@ exports.createMaintenance = async (req, res) => {
   const t = await sequelize.transaction();
   try {
     const { vehicleId, mechanicId, scheduledDate, serviceType, description, laborCost } = req.body;
+    
+    const cleanVehicleId = parseId(vehicleId);
+    const cleanMechanicId = parseId(mechanicId);
+
+    if (!cleanVehicleId) throw new Error('Valid Vehicle ID is required');
+    if (!cleanMechanicId) throw new Error('Valid Mechanic ID is required');
+
     const job = await Maintenance.create({
-      VehicleID: vehicleId, MechanicID: mechanicId, ScheduledDate: scheduledDate,
-      ServiceType: serviceType, Description: description, LaborCost: laborCost, Status: 'Scheduled'
+      VehicleID: cleanVehicleId, 
+      MechanicID: cleanMechanicId, 
+      ScheduledDate: scheduledDate,
+      ServiceType: serviceType, 
+      Description: description, 
+      LaborCost: laborCost || 0, 
+      Status: 'Scheduled'
     }, { transaction: t });
 
-    await Vehicle.update({ Status: 'Maintenance' }, { where: { VehicleID: vehicleId }, transaction: t });
+    await Vehicle.update({ Status: 'Maintenance' }, { where: { VehicleID: cleanVehicleId }, transaction: t });
 
     await t.commit();
     res.status(201).json({ success: true, message: 'Maintenance job created', data: job });

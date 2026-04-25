@@ -10,6 +10,14 @@ const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 }, fileFilt
 
 exports.upload = upload;
 
+const parseId = (id) => {
+  if (!id) return null;
+  if (typeof id === 'string') {
+    return parseInt(id.replace(/^(VEH|STF|CUST|MNT|RPT)-/i, ''));
+  }
+  return id;
+};
+
 exports.getDamageReports = async (req, res) => {
   try {
     const { vehicleId, status } = req.query;
@@ -27,10 +35,20 @@ exports.createDamageReport = async (req, res) => {
   const t = await sequelize.transaction();
   try {
     const { vehicleId, contractNo, damagePart, damageSide, severity, incidentDetails, description, repairCost, insuranceClaim } = req.body;
+    
+    const cleanVehicleId = parseId(vehicleId);
+    if (!cleanVehicleId) throw new Error('Valid Vehicle ID is required');
+
     const report = await DamageReport.create({
-      VehicleID: vehicleId, ContractNo: contractNo, DamagePart: damagePart, DamageSide: damageSide,
-      Severity: severity, IncidentDetails: incidentDetails, Description: description,
-      RepairCost: repairCost, InsuranceClaim: insuranceClaim === 'true'
+      VehicleID: cleanVehicleId, 
+      ContractNo: contractNo || null, 
+      DamagePart: damagePart, 
+      DamageSide: damageSide,
+      Severity: severity || 'Medium', 
+      IncidentDetails: incidentDetails, 
+      Description: description,
+      RepairCost: repairCost || 0, 
+      InsuranceClaim: insuranceClaim === 'true' || insuranceClaim === true
     }, { transaction: t });
 
     if (req.files && req.files.length > 0) {

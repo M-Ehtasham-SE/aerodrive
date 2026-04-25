@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from '../../api/axios';
-import { Plus, Trash2, Edit } from 'lucide-react';
+import { Plus, Trash2, Edit, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 import CustomerForm from './CustomerForm';
 import CustomerProfile from './CustomerProfile';
@@ -41,11 +41,36 @@ export default function CustomerList() {
     }
   };
 
+  const exportToCSV = () => {
+    const headers = "ID,FirstName,LastName,Phone,CNIC,LicenseNo,Occupation\n";
+    const rows = customers.map(c => 
+      `CUST-${c.PersonID},${c.Person?.FirstName},${c.Person?.LastName},${c.Person?.Phone},${c.CNIC},${c.LicenseNo},${c.Occupation}`
+    ).join("\n");
+    
+    const blob = new Blob([headers + rows], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', 'customers_list.csv');
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    toast.success('Exporting CSV...');
+  };
+
   return (
     <div style={{ padding: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <h1 style={{ fontFamily: 'Exo 2', fontSize: '22px' }}>Customers</h1>
-        <button className="btn-primary" onClick={() => setShowForm(true)}><Plus size={16} /> Add Customer</button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button className="btn-secondary" onClick={exportToCSV} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Download size={16} /> Export CSV
+          </button>
+          <button className="btn-primary" onClick={() => setShowForm(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Plus size={16} /> Add Customer
+          </button>
+        </div>
       </div>
 
       <div className="card">
