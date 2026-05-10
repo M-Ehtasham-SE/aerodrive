@@ -41,11 +41,11 @@ export default function Signup() {
           <div style={{ display: 'flex', gap: '12px' }}>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: 'var(--text-secondary)' }}>First Name</label>
-              <input className="input" placeholder="John" required onChange={e => setFormData({...formData, firstName: e.target.value})} />
+              <input className="input" placeholder="Ali" required onChange={e => setFormData({...formData, firstName: e.target.value})} />
             </div>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: 'var(--text-secondary)' }}>Last Name</label>
-              <input className="input" placeholder="Doe" required onChange={e => setFormData({...formData, lastName: e.target.value})} />
+              <input className="input" placeholder="Khan" required onChange={e => setFormData({...formData, lastName: e.target.value})} />
             </div>
           </div>
 

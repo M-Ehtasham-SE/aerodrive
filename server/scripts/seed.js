@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const { sequelize, Person, Customer, Staff, Manager, Branch, Model, Vehicle, Car, Bike, Truck } = require('../models');
+const { sequelize, Person, Customer, Staff, Manager, Mechanic, Branch, Model, Vehicle, Car, Bike, Truck } = require('../models');
 
 async function seed() {
   try {
@@ -56,24 +56,24 @@ async function seed() {
     ]);
 
     // Seed People / Customers
-    const c1 = await Person.create({ FirstName: 'John', LastName: 'Doe', Phone: '555-1111', Password: passwordHash });
+    const c1 = await Person.create({ FirstName: 'Umar', LastName: 'Farooq', Phone: '555-1111', Password: passwordHash });
     await Customer.create({ PersonID: c1.PersonID, CNIC: '1234567890123', LicenseNo: 'LIC-001', DateOfBirth: '1990-05-15', Occupation: 'Engineer' });
 
-    const c2 = await Person.create({ FirstName: 'Jane', LastName: 'Smith', Phone: '555-2222', Password: passwordHash });
+    const c2 = await Person.create({ FirstName: 'Fatima', LastName: 'Zahra', Phone: '555-2222', Password: passwordHash });
     await Customer.create({ PersonID: c2.PersonID, CNIC: '1234567890124', LicenseNo: 'LIC-002', DateOfBirth: '1985-08-20', Occupation: 'Doctor' });
 
     const c3 = await Person.create({ FirstName: 'Ali', LastName: 'Khan', Phone: '555-3333', Password: passwordHash });
     await Customer.create({ PersonID: c3.PersonID, CNIC: '1234567890125', LicenseNo: 'LIC-003', DateOfBirth: '1998-12-05', Occupation: 'Student' });
 
     // Seed Staff & Manager
-    const s1 = await Person.create({ FirstName: 'Alice', LastName: 'Johnson', Phone: '555-4444', Password: passwordHash });
+    const s1 = await Person.create({ FirstName: 'Ayesha', LastName: 'Siddiqui', Phone: '555-4444', Password: passwordHash });
     await Staff.create({ PersonID: s1.PersonID, Position: 'Clerk', HireDate: '2022-01-10', Salary: 3000.00, ShiftType: 'Morning', BranchID: branches[0].BranchID });
 
-    const s2 = await Person.create({ FirstName: 'Bob', LastName: 'Williams', Phone: '555-5555', Password: passwordHash });
+    const s2 = await Person.create({ FirstName: 'Bilal', LastName: 'Ahmed', Phone: '555-5555', Password: passwordHash });
     await Staff.create({ PersonID: s2.PersonID, Position: 'Mechanic', HireDate: '2021-06-15', Salary: 4000.00, ShiftType: 'Evening', BranchID: branches[1].BranchID });
     await Mechanic.create({ PersonID: s2.PersonID, Specialization: 'General', ToolKit: 'Master Pro Kit', WorkshopAssigned: 'Main Workshop' });
 
-    const m1 = await Person.create({ FirstName: 'Michael', LastName: 'Scott', Phone: '555-6666', Password: passwordHash });
+    const m1 = await Person.create({ FirstName: 'Ehtasham', LastName: 'Ali', Phone: '555-6666', Password: passwordHash });
     await Staff.create({ PersonID: m1.PersonID, Position: 'Manager', HireDate: '2015-03-01', Salary: 7000.00, ShiftType: 'Morning', BranchID: branches[0].BranchID });
     await Manager.create({ PersonID: m1.PersonID, Department: 'Operations', ManagedBranch: 'Downtown Hub', BonusPercentage: 10.0 });
 

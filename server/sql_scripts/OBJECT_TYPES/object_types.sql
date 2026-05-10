@@ -29,5 +29,5 @@ ADD COLUMN BranchMetaData JSON;
 
 -- Updating a record with a JSON Object
 -- UPDATE branch 
--- SET BranchMetaData = '{"manager_name": "Alice", "established_year": 2015}'
+-- SET BranchMetaData = '{"manager_name": "Ayesha", "established_year": 2015}'
 -- WHERE BranchID = 1;
