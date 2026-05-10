@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS staff (
   Position    VARCHAR(50),
   HireDate    DATE,
   Salary      DECIMAL(10,2),
+  CHECK (Salary >= 0),
   ShiftType   ENUM('Morning','Evening','Night'),
   StartTime   TIME,
   EndTime     TIME,
@@ -90,7 +91,9 @@ CREATE TABLE IF NOT EXISTS model (
   SeatingCapacity  INT,
   Transmission     ENUM('Manual','Automatic','CVT'),
   FuelAverage      DECIMAL(5,2),
-  DailyRate        DECIMAL(10,2) NOT NULL
+  DailyRate        DECIMAL(10,2) NOT NULL,
+  CHECK (DailyRate > 0),
+  CHECK (SeatingCapacity > 0)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS vehicle (
@@ -98,6 +101,7 @@ CREATE TABLE IF NOT EXISTS vehicle (
   RegistrationNo VARCHAR(50) UNIQUE NOT NULL,
   LicensePlate   VARCHAR(30) UNIQUE NOT NULL,
   Mileage        INT DEFAULT 0,
+  CHECK (Mileage >= 0),
   Status         ENUM('Available','Rented','Maintenance','Reserved','Retired') DEFAULT 'Available',
   FuelType       ENUM('Petrol','Diesel','Electric','Hybrid'),
   Year           YEAR,
