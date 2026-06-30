@@ -1,5 +1,5 @@
 const { Sequelize } = require('sequelize');
-require('mysql2'); // explicitly required for Vercel bundler
+const mysql2 = require('mysql2');
 require('dotenv').config();
 
 const sequelize = new Sequelize(
@@ -8,8 +8,9 @@ const sequelize = new Sequelize(
   process.env.DB_PASS,
   {
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
+    port: process.env.DB_PORT || 4000,
     dialect: 'mysql',
+    dialectModule: mysql2,
     dialectOptions: {
       ssl: {
         rejectUnauthorized: true,
