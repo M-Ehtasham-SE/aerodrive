@@ -7,9 +7,13 @@ const fs = require('fs');
 
 const app = express();
 
-const uploadDir = path.join(__dirname, 'uploads', 'damage-photos');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+try {
+  const uploadDir = path.join(__dirname, 'uploads', 'damage-photos');
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+} catch (e) {
+  // Vercel has a read-only filesystem, skip directory creation
 }
 
 app.use(cors({ origin: [process.env.CLIENT_URL || 'http://localhost:3000', 'http://localhost:5173'], credentials: true }));
