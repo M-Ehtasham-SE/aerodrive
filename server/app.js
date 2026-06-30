@@ -16,9 +16,13 @@ try {
   // Vercel has a read-only filesystem, skip directory creation
 }
 
-app.use(cors({ origin: [process.env.CLIENT_URL || 'http://localhost:3000', 'http://localhost:5173'], credentials: true }));
+app.use(cors({ origin: [process.env.CLIENT_URL || 'http://localhost:3000', 'http://localhost:5173', 'https://aerodrive-n1lh.vercel.app'], credentials: true }));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.get('/', (req, res) => {
+  res.json({ message: 'AeroDrive API is running perfectly! 🚀' });
+});
 
 // Routes
 app.use('/api/auth',        require('./routes/auth.routes'));
