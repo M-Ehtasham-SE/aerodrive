@@ -3,9 +3,16 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
+const fs = require('fs');
+
 const app = express();
 
-app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:5173'], credentials: true }));
+const uploadDir = path.join(__dirname, 'uploads', 'damage-photos');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+app.use(cors({ origin: [process.env.CLIENT_URL || 'http://localhost:3000', 'http://localhost:5173'], credentials: true }));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
