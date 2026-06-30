@@ -1,5 +1,4 @@
-CREATE DATABASE IF NOT EXISTS aerodrive_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE aerodrive_db;
+USE test;
 
 CREATE TABLE IF NOT EXISTS person (
   PersonID    INT AUTO_INCREMENT PRIMARY KEY,
