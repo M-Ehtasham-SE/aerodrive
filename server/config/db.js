@@ -1,5 +1,4 @@
 const { Sequelize } = require('sequelize');
-const mysql2 = require('mysql2');
 require('dotenv').config();
 
 const sequelize = new Sequelize(
@@ -8,12 +7,12 @@ const sequelize = new Sequelize(
   process.env.DB_PASS,
   {
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT || 4000,
-    dialect: 'mysql',
-    dialectModule: mysql2,
+    port: process.env.DB_PORT || 5432,
+    dialect: 'postgres',
     dialectOptions: {
       ssl: {
-        rejectUnauthorized: true,
+        require: true,
+        rejectUnauthorized: false // Required for Aiven cloud SSL
       }
     },
     logging: false,

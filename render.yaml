@@ -10,6 +10,8 @@ services:
         value: 5000
       - key: DB_HOST
         sync: false
+      - key: DB_PORT
+        sync: false
       - key: DB_USER
         sync: false
       - key: DB_PASS
