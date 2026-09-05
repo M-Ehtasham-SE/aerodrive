@@ -9,14 +9,18 @@ async function seed() {
     console.log('Database synced.');
 
     // Create v_customer view
-    await sequelize.query(`
-      CREATE OR REPLACE VIEW v_customer AS
-      SELECT c.*, p.FirstName, p.LastName, p.Phone, p.Street, p.City, p.ZipCode,
-             TIMESTAMPDIFF(YEAR, c.DateOfBirth, CURDATE()) AS Age
-      FROM customer c
-      JOIN person p ON c.PersonID = p.PersonID;
-    `);
-    console.log('v_customer view created.');
+    try {
+      await sequelize.query(`
+        CREATE OR REPLACE VIEW v_customer AS
+        SELECT c.*, p."FirstName", p."LastName", p."Phone", p."Street", p."City", p."ZipCode",
+               EXTRACT(YEAR FROM age(CURRENT_DATE, c."DateOfBirth")) AS "Age"
+        FROM customer c
+        JOIN person p ON c."PersonID" = p."PersonID";
+      `);
+      console.log('v_customer view created.');
+    } catch (ve) {
+      console.warn('View creation warning (continuing):', ve.message);
+    }
 
     const passwordHash = await bcrypt.hash('password123', 12);
 
