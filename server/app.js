@@ -16,7 +16,29 @@ try {
   // Vercel has a read-only filesystem, skip directory creation
 }
 
-app.use(cors({ origin: [process.env.CLIENT_URL || 'http://localhost:3000', 'http://localhost:5173', 'https://aerodrive-n1lh.vercel.app'], credentials: true }));
+const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.trim().replace(/\/+$/, '') : null;
+const allowedOrigins = [
+  clientUrl,
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'https://aerodrive-n1lh.vercel.app'
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.onrender.com') ||
+      origin.endsWith('.vercel.app') ||
+      origin.endsWith('.netlify.app')
+    ) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
