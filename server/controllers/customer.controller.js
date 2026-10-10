@@ -39,12 +39,18 @@ exports.getCustomerById = async (req, res) => {
 exports.createCustomer = async (req, res) => {
   const t = await sequelize.transaction();
   try {
-    const { firstName, lastName, phone, password, cnic, licenseNo, dateOfBirth, occupation, emails, paymentMethods, emergencyContacts } = req.body;
+    let { firstName, lastName, phone, password, cnic, licenseNo, dateOfBirth, occupation, emails, paymentMethods, emergencyContacts } = req.body;
     
+    phone = phone ? String(phone).trim() : '';
+    if (!phone || !password) {
+      await t.rollback();
+      return res.status(400).json({ success: false, message: 'Phone and password are required' });
+    }
+
     const existing = await Person.findOne({ where: { Phone: phone } });
     if (existing) {
       await t.rollback();
-      return res.status(400).json({ success: false, message: 'Phone number already registered' });
+      return res.status(400).json({ success: false, message: 'Phone number already registered. Please log in.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);

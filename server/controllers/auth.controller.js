@@ -36,17 +36,34 @@ exports.register = async (req, res) => {
   }
 };
 
+const { Op } = require('sequelize');
+
 exports.login = async (req, res) => {
   let { phone, password } = req.body;
-  // Basic normalization: remove spaces/hyphens if user types them differently
-  // However, the seed data HAS hyphens. So we should ensure consistency.
-  // For now, let's just use what's sent.
+  if (!phone || !password) {
+    return res.status(400).json({ success: false, message: 'Phone and password are required' });
+  }
+
+  phone = String(phone).trim();
+  const digitsOnly = phone.replace(/\D/g, '');
+
   try {
-    const person = await Person.findOne({ where: { Phone: phone } });
-    if (!person) return res.status(404).json({ success: false, message: 'User not found' });
+    const phoneCandidates = [phone];
+    if (digitsOnly && digitsOnly !== phone) phoneCandidates.push(digitsOnly);
+    if (digitsOnly.length === 7) {
+      phoneCandidates.push(`${digitsOnly.slice(0, 3)}-${digitsOnly.slice(3)}`);
+    }
+
+    const person = await Person.findOne({
+      where: {
+        Phone: { [Op.in]: phoneCandidates }
+      }
+    });
+
+    if (!person) return res.status(404).json({ success: false, message: 'User not found. Please check your phone number.' });
 
     const isMatch = await bcrypt.compare(password, person.Password);
-    if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid credentials' });
+    if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid credentials. Password is incorrect.' });
 
     // Determine role
     let role = 'customer';
@@ -61,7 +78,8 @@ exports.login = async (req, res) => {
       name: `${person.FirstName} ${person.LastName}`
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
+    const jwtSecret = process.env.JWT_SECRET || 'super_secret_aerodrive_jwt_key_2026';
+    const token = jwt.sign(payload, jwtSecret, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
 
     res.json({ success: true, message: 'Login successful', data: { token, user: payload } });
   } catch (error) {
