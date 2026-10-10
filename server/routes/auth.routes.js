@@ -27,6 +27,10 @@ router.post(
   authController.login
 );
 
+router.get('/login', (req, res) => {
+  res.json({ success: true, message: 'AeroDrive Auth API: Send a POST request with phone and password to log in.' });
+});
+
 router.get('/me', verifyToken, authController.me);
 
 module.exports = router;

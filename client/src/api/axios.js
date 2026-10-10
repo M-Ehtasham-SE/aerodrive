@@ -1,21 +1,16 @@
 import axios from 'axios';
 
-// Smart API URL resolution:
-// In production (Render, Vercel, Netlify, custom domain), always connect to live Render backend
-// In local development on localhost, allow local backend or configured VITE_API_URL
-const isBrowser = typeof window !== 'undefined';
-const isLocalhost = isBrowser && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+// Default to live working Render backend everywhere (localhost, Render, Vercel)
+// unless explicitly overridden by an active VITE_API_URL
+const defaultBaseURL = 'https://aerodrive-backend.onrender.com/api';
+const configuredURL = import.meta.env.VITE_API_URL;
 
-let resolvedBaseURL = 'https://aerodrive-backend.onrender.com/api';
-
-if (isLocalhost) {
-  resolvedBaseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-} else if (import.meta.env.VITE_API_URL && !import.meta.env.VITE_API_URL.includes('aerodrive-one.vercel.app') && !import.meta.env.VITE_API_URL.includes('localhost')) {
-  resolvedBaseURL = import.meta.env.VITE_API_URL;
-}
+const baseURL = (configuredURL && !configuredURL.includes('aerodrive-one.vercel.app'))
+  ? configuredURL
+  : defaultBaseURL;
 
 const instance = axios.create({
-  baseURL: resolvedBaseURL,
+  baseURL,
 });
 
 instance.interceptors.request.use((config) => {
