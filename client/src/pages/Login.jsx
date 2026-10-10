@@ -7,17 +7,22 @@ import toast from 'react-hot-toast';
 export default function Login() {
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await login({ phone, password });
       toast.success('Logged in successfully');
       navigate('/dashboard');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Login failed');
+      const errMsg = err.response?.data?.message || err.message || 'Login failed. Please check your credentials.';
+      toast.error(errMsg);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -55,8 +60,8 @@ export default function Login() {
               required
             />
           </div>
-          <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '8px' }}>
-            Sign In
+          <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', marginTop: '8px' }}>
+            {loading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
         <div style={{ marginTop: '24px', textAlign: 'center', fontSize: '14px', color: 'var(--text-secondary)' }}>
